@@ -1,0 +1,44 @@
+:host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.card {
+    width: 300px;
+    min-height: 200px;
+    padding: 20px;
+}
+
+.form {
+    width: 100%;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.button {
+    margin-top: 20px;
+}
+
+.button-left {
+    //margin-top: 20px;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+.button-right {
+    //margin-top: 20px;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.logins {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

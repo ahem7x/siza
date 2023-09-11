@@ -1,0 +1,81 @@
+<div class="wrapper" [ngClass]="{ notselected: !isSelected(), selected: isSelected() }">
+  <div class="content">
+    <img src="../../../assets/icons/{{
+        bundle.lang.name === '.Net' ? 'dotnet' : bundle.lang.name.toLowerCase()
+      }}.svg" class="mat-elevation-z1" />
+    
+    <div [ngClass]="{'typewriter': (isSelected())}">{{ bundle.lang.name }}</div>
+
+    <h4>Web Server</h4>
+    <div [ngClass]="{'typewriter': (isSelected())}">{{ bundle.web.os }}, {{ bundle.web.name }}</div>
+
+    <h4>App Server</h4>
+    <div [ngClass]="{'typewriter': (isSelected())}">{{ bundle.app.os }}, {{ bundle.app.name }}</div>
+
+    <h4>DB Server</h4>
+    <div [ngClass]="{'typewriter': (isSelected())}">{{ bundle.db.os }}, {{ bundle.db.name }}</div>
+
+  </div>
+  <div class="row">
+    <button
+            *ngIf="isSelected()"
+            mat-flat-button
+            color="warn"
+            >
+      SELECTED
+    </button>
+
+    <button *ngIf="!isSelected()" mat-flat-button color="primary" (click)="select(bundle)">
+      SELECT
+    </button>
+  </div>
+</div>
+
+<!--
+<div class="row">
+  <h4 class="heading">Language</h4>
+  <span class="mat-elevation-z2 buildTool">{{ bundle.lang.buildTool }}</span>
+  <img
+    src="../../../assets/icons/{{
+      bundle.lang.name === '.Net' ? 'dotnet' : bundle.lang.name.toLowerCase()
+    }}.svg"
+    class="mat-elevation-z2"
+  />
+</div>
+
+<div class="row">
+  <h4 class="heading">Web Server</h4>
+  <img src="../../../assets/icons/{{ bundle.web.os.toLowerCase() }}.svg" class="mat-elevation-z2" />
+  <img
+    src="../../../assets/icons/{{ bundle.web.name.toLowerCase() }}.svg"
+    class="mat-elevation-z2"
+  />
+</div>
+
+<div class="row">
+  <h4 class="heading">App Server</h4>
+  <img src="../../../assets/icons/{{ bundle.app.os.toLowerCase() }}.svg" class="mat-elevation-z2" />
+  <img
+    src="../../../assets/icons/{{ bundle.app.name.toLowerCase() }}.svg"
+    class="mat-elevation-z2"
+  />
+</div>
+
+<div class="row">
+  <h4 class="heading">DB Server</h4>
+  <img src="../../../assets/icons/{{ bundle.db.os.toLowerCase() }}.svg" class="mat-elevation-z2" />
+  <img
+    src="../../../assets/icons/{{ bundle.db.name.toLowerCase() }}.svg"
+    class="mat-elevation-z2"
+  />
+</div>
+<div class="row">
+  <button *ngIf="isSelected()" mat-flat-button color="accent">
+    SELECTED
+  </button>
+
+  <button *ngIf="!isSelected()" mat-flat-button color="primary" (click)="select(bundle)">
+    SELECT
+  </button>
+</div>
+-->

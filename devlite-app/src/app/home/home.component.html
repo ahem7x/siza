@@ -1,0 +1,31 @@
+<mat-toolbar>
+  <mat-toolbar-row class="menu">
+    <div class="nav">
+      <ng-container *ngFor="let menuItem of modulesList">
+        <button #button mat-button [routerLink]="menuItem.routerLink"
+          [ngClass]="getCurrentTabIndex() === menuItem.tabIndex?'selected':'not-selected'">
+          <span>{{menuItem.label}}</span>
+        </button>
+      </ng-container>
+    </div>
+
+    <span class="login-message">(Logged in as {{username}})</span>
+    <button class="button" (click)="logout()" mat-button>LOGOUT</button>
+  </mat-toolbar-row>
+  <mat-toolbar-row style="background-color: #f1f1f1; text-align: center;">
+    <img class="logo" src="../../assets/DlightLogo.png" />
+    <div class="text-wrapper">
+      <span>Lightning Dev Agile</span>
+      <span class="animated-words">
+        <span>Sec</span>
+        <span>Perf</span>
+        <span>Heal</span>
+        <span>Bill</span>
+        <span>Ops</span>
+      </span>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>
+<div class="content">
+  <router-outlet></router-outlet>
+</div>

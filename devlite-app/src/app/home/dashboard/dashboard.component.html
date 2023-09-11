@@ -1,0 +1,138 @@
+<mat-progress-bar *ngIf="loading" mode="indeterminate" style="width: 100%;"></mat-progress-bar>
+<div class="titleRow" *ngIf="!loading">
+  <div></div>
+  <button mat-flat-button color="primary">Onboard to EDOC</button>
+</div>
+<div class="titleRow" *ngIf="!loading">
+  <div style="flex: 1; text-align: center;">
+    <h4>SUMMARY VIEW</h4>
+  </div>
+  <h4>DETAILED VIEW</h4>
+</div>
+<div class="wrapper" *ngIf="!loading">
+  <div class="tiles">
+    <mat-grid-list cols="3" rowHeight="140px" gutterSize="8px">
+      <mat-grid-tile
+        [ngClass]="{
+          build: stat.type === 'build',
+          deployment: stat.type === 'deployment',
+          repo: stat.type === 'repo'
+        }"
+        class="mat-elevation-z4"
+        *ngFor="let stat of stats"
+      >
+        <div class="metric">
+          <div class="title">
+            {{ stat.title }}
+          </div>
+          <div class="value">{{ stat.value }}{{ stat.suffix }}</div>
+        </div>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+  <div class="content">
+    <mat-grid-list cols="8" rowHeight="140px" gutterSize="8px">
+      <mat-grid-tile rowspan="2" colspan="3">
+        <app-piechart
+          chartId="bs"
+          [title]="pie1Label"
+          [labelSeries]="buildLabels"
+          [dataSeries]="buildData"
+        ></app-piechart>
+      </mat-grid-tile>
+      <mat-grid-tile rowspan="2" colspan="3">
+        <app-piechart
+          chartId="ds"
+          [title]="pie2Label"
+          [labelSeries]="deployLabels"
+          [dataSeries]="deployData"
+        ></app-piechart>
+      </mat-grid-tile>
+
+      <mat-grid-tile rowspan="4" colspan="2" style="background: #ffffff;">
+        <div class="links">
+          <mat-list>
+            <mat-list-item>
+              <a target="_blank" href="{{ links[0] }}">
+                <mat-icon matListIcon color="primary">link</mat-icon>
+                Agile Statistics
+              </a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <a target="_blank" href="{{ links[1] }}">
+                <mat-icon matListIcon color="primary">link</mat-icon>
+                DevTest Status
+              </a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <a target="_blank" href="{{ links[2] }}">
+                <mat-icon matListIcon color="primary">link</mat-icon>
+                Security Measures
+              </a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <div mat-subheader>Operational Statistics</div>
+            <mat-list-item>
+              <a target="_blank" href="{{ links[3] }}">
+                <mat-icon matListIcon color="primary">call_made</mat-icon>
+                Infra
+              </a>
+            </mat-list-item>
+            <mat-list-item>
+              <a target="_blank" href="{{ links[4] }}">
+                <mat-icon matListIcon color="primary">call_made</mat-icon>
+                Apps
+              </a>
+            </mat-list-item>
+            <mat-list-item>
+              <a target="_blank" href="{{ links[5] }}">
+                <mat-icon matListIcon color="primary">call_made</mat-icon>
+                Containers
+              </a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <a target="_blank" href="{{ links[6] }}">
+                <mat-icon matListIcon color="primary">link</mat-icon>
+                Process Metrics
+              </a>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </mat-grid-tile>
+
+      <mat-grid-tile
+        *ngIf="ciToolValue === 'Azure'"
+        rowspan="2"
+        colspan="6"
+        style="background: #ffffff;"
+      >
+        <app-barchart
+          chartId="bt"
+          title="Build Time (seconds)"
+          [labelSeries]="buildTimeLabels"
+          [dataSeries]="buildTimeData"
+          themeColor="#33b96d"
+        ></app-barchart>
+      </mat-grid-tile>
+
+      <mat-grid-tile
+        *ngIf="ciToolValue === 'GitLab'"
+        rowspan="2"
+        colspan="6"
+        style="background: #ffffff;"
+      >
+        <app-stacked-barlinechart
+          chartId="bt"
+          title="Build Time (seconds)"
+          [labelSeries]="branchLabels"
+          [dataSeries1]="branchSeries[0]"
+          [dataSeries2]="branchSeries[1]"
+          [lineSeries]="branchSeries[2]"
+        ></app-stacked-barlinechart>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+</div>

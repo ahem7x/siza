@@ -1,0 +1,319 @@
+<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+<form class="form" *ngIf="!loading">
+  <h4 *ngIf="!data.gitCodeUrl">Project</h4>
+
+  <h4 *ngIf="data.gitCodeUrl">Project - {{ data.gitCodeUrl }}</h4>
+  <div *ngIf="repos.length === 0">No repositories found. Please create one.</div>
+  <mat-grid-list cols="6" rowHeight="300px" gutterSize="12px">
+    <mat-grid-tile
+      [ngClass]="{ notselected: !isRepoSelected(repo), selected: isRepoSelected(repo) }"
+      *ngFor="let repo of filteredRepos"
+    >
+      <div class="repoWrapper">
+        <div class="content">
+          <h4>Business Unit</h4>
+          <div [ngClass]="{ typewriter: repo.bu && isRepoSelected(repo) }">
+            {{ repo.bu || "-" }}
+          </div>
+
+          <h4>Project</h4>
+          <div [ngClass]="{ typewriter: isRepoSelected(repo) }">{{ repo.projectName }}</div>
+
+          <h4>Repository</h4>
+          <div [ngClass]="{ typewriter: isRepoSelected(repo) }">{{ repo.repository }}</div>
+
+          <h4>Branch</h4>
+          <div [ngClass]="{ typewriter: isRepoSelected(repo) }">
+            {{ repo.branch.substring(repo.branch.lastIndexOf("/") + 1) }}
+          </div>
+        </div>
+        <div class="row">
+          <button
+            *ngIf="isRepoSelected(repo)"
+            mat-flat-button
+            color="warn"
+            >
+            SELECTED
+          </button>
+
+          <button
+            *ngIf="!isRepoSelected(repo)"
+            mat-flat-button
+            color="primary"
+            (click)="selectRepo(repo)"
+          >
+            SELECT
+          </button>
+        </div>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <mat-paginator
+    [length]="repos.length"
+    [pageSize]="12"
+    hidePageSize="true"
+    style="margin-bottom: 16px; margin-top: 16px"
+    (page)="onRepoPageChange($event)"
+  >
+  </mat-paginator>
+
+  <h4 *ngIf="data.bundle.lang" class="mt-3">
+    Bundle: {{ data.bundle.lang.name }} -
+    Web ({{ data.bundle.web.name }} on {{ data.bundle.web.os }}) - App ({{ data.bundle.app.name }} on {{
+      data.bundle.app.os
+    }}) - DB ({{ data.bundle.db.name }} on {{ data.bundle.db.os }})
+  </h4>
+
+  <h4 *ngIf="!data.bundle.lang">Bundle</h4>
+
+  <mat-grid-list cols="6" rowHeight="315px" gutterSize="12px" style="margin-bottom: 16px">
+    <mat-grid-tile 
+    *ngFor="let bundle of filteredBundles">
+      <app-bundlecatalogitem
+        [bundle]="bundle"
+        [selectedBundle]="data.bundle"
+        (selected)="data.bundle = $event"
+      ></app-bundlecatalogitem>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-paginator
+    [length]="configValues.bundle.length"
+    [pageSize]="12"
+    hidePageSize="true"
+    style="margin-bottom: 16px"
+    (page)="onPageChange($event)"
+  >
+  </mat-paginator>
+
+  <h4>Infrastructure - as code</h4>
+  <mat-form-field>
+    <mat-select name="releaseDeploymentStrategy" [(ngModel)]="releaseDeploymentStrategy">
+      <mat-option value="Big Bang">Big Bang</mat-option>
+      <mat-option value="Blue Green">Blue Green</mat-option>
+      <mat-option value="Canary">Canary</mat-option>
+      <mat-option value="Rolling">Rolling</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div>
+    <mat-checkbox color="primary" name="enableHA" [(ngModel)]="data.enableHA"
+      >Enable HA
+    </mat-checkbox>
+  </div>
+
+  <div>
+    <mat-checkbox
+      color="primary"
+      name="microServicesEnabled"
+      [(ngModel)]="data.microServicesEnabled"
+      >Microservices Enabled App
+    </mat-checkbox>
+  </div>
+  <div>
+    <mat-checkbox color="primary" name="contanersEnabled" [(ngModel)]="data.contanersEnabled"
+      >Enable Containerization
+    </mat-checkbox>
+  </div>
+  <mat-grid-list
+    *ngIf="data.microServicesEnabled"
+    cols="5"
+    rowHeight="130px"
+    gutterSize="16px"
+    style="margin-bottom: 16px; margin-top: 16px"
+  >
+    <mat-grid-tile style="background-color: #FFFFFF;">
+      <app-configitem
+        label="Load Balancer"
+        icon="menu_book"
+        [value]="data.loadBalancer"
+        [options]="configValues.catalog.loadBalancer"
+        [perspectiveValue]="defaultData.catalog.loadBalancer[0]"
+        (onSelect)="data.loadBalancer = $event"
+      >
+      </app-configitem>
+    </mat-grid-tile>
+
+    <mat-grid-tile style="background-color: #FFFFFF; border-radius: 4px;">
+      <app-configitem
+        label="API Gateway"
+        icon="menu_book"
+        [value]="data.apiGateway"
+        [options]="configValues.catalog.apiGateway"
+        [perspectiveValue]="defaultData.catalog.apiGateway[0]"
+        (onSelect)="data.apiGateway = $event"
+      >
+      </app-configitem>
+    </mat-grid-tile>
+
+    <mat-grid-tile style="background-color: #FFFFFF; border-radius: 4px;">
+      <app-configitem
+        label="Service Discovery"
+        icon="menu_book"
+        [value]="data.serviceDiscovery"
+        [options]="configValues.catalog.serviceDirectory"
+        [perspectiveValue]="defaultData.catalog.serviceDirectory[0]"
+        (onSelect)="data.serviceDiscovery = $event"
+      >
+      </app-configitem>
+    </mat-grid-tile>
+
+    <mat-grid-tile style="background-color: #FFFFFF; border-radius: 4px;">
+      <app-configitem
+        label="Container Orchestrator"
+        icon="menu_book"
+        [value]="data.containerOrchestrator"
+        [options]="configValues.catalog.containerOrchestrator"
+        [perspectiveValue]="defaultData.catalog.containerOrchestrator[0]"
+        (onSelect)="data.containerOrchestrator = $event"
+      >
+      </app-configitem>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list
+    *ngIf="data.contanersEnabled"
+    cols="5"
+    rowHeight="130px"
+    gutterSize="16px"
+    style="margin-bottom: 16px; margin-top: 16px"
+  >
+    <mat-grid-tile style="background-color: #FFFFFF;" colspan="2">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="data.dockerFile"
+          matInput
+          name="dockerFile"
+          placeholder="Docker File URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <app-catalogitem
+    cols="5"
+    label="Servers"
+    multiple="true"
+    [options]="configValues.catalog.envType"
+    [value]="data.envType"
+    [icons]="['kitchen', 'kitchen', 'kitchen', 'kitchen']"
+    (onSelect)="data.envType = $event"
+  >
+  </app-catalogitem>
+  <mat-grid-list style="margin-top: 16px;" cols="5" rowHeight="60px" gutterSize="16px">
+    <mat-grid-tile style="background-color: #FFFFFF;">
+      <mat-form-field class="fluid-field">
+        <input
+          type="number"
+          [(ngModel)]="data.envConfig.devNoInstance"
+          matInput
+          name="devNoInstance"
+          placeholder="No of Instances"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile style="background-color: #FFFFFF;">
+      <mat-form-field class="fluid-field">
+        <input
+          type="number"
+          [(ngModel)]="data.envConfig.testNoInstance"
+          matInput
+          name="testNoInstance"
+          placeholder="No of Instances"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile style="background-color: #FFFFFF;">
+      <mat-form-field class="fluid-field">
+        <input
+          type="number"
+          [(ngModel)]="data.envConfig.stagNoInstance"
+          matInput
+          name="stagNoInstance"
+          placeholder="No of Instances"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile style="background-color: #FFFFFF;">
+      <mat-form-field class="fluid-field">
+        <input
+          type="number"
+          [(ngModel)]="data.envConfig.prodNoInstance"
+          matInput
+          name="prodNoInstance"
+          placeholder="No of Instances"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <mat-grid-list cols="5" rowHeight="60px" gutterSize="16px">
+    <mat-grid-tile style="background-color: #FFFFFF;">
+      <mat-form-field class="fluid-field">
+        <mat-label>T-Shirt Sizes</mat-label>
+        <mat-select
+          [(value)]="data.envConfig.devTShirtSize"
+          name="devTShirtSize"
+          [(ngModel)]="data.envConfig.devTShirtSize"
+        >
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let size of configValues.catalog.tShirtSize" [value]="size">{{
+            size
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+
+    <mat-grid-tile style="background-color: #FFFFFF;">
+      <mat-form-field class="fluid-field">
+        <mat-label>T-Shirt Sizes</mat-label>
+        <mat-select
+          [(value)]="data.envConfig.testTShirtSize"
+          name="testTShirtSize"
+          [(ngModel)]="data.envConfig.testTShirtSize"
+        >
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let size of configValues.catalog.tShirtSize" [value]="size">{{
+            size
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+
+    <mat-grid-tile style="background-color: #FFFFFF;">
+      <mat-form-field class="fluid-field">
+        <mat-label>T-Shirt Sizes</mat-label>
+        <mat-select
+          [(value)]="data.envConfig.stagTShirtSize"
+          name="stagTShirtSize"
+          [(ngModel)]="data.envConfig.stagTShirtSize"
+        >
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let size of configValues.catalog.tShirtSize" [value]="size">{{
+            size
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+
+    <mat-grid-tile style="background-color: #FFFFFF;">
+      <mat-form-field class="fluid-field">
+        <mat-label>T-Shirt Sizes</mat-label>
+        <mat-select
+          [(value)]="data.envConfig.prodTShirtSize"
+          name="prodTShirtSize"
+          [(ngModel)]="data.envConfig.prodTShirtSize"
+        >
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let size of configValues.catalog.tShirtSize" [value]="size">{{
+            size
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <div style="display: flex; flex-direction: row; justify-content: flex-end;">
+    <button class="button" (click)="saveDetails()" mat-raised-button color="primary">Save</button>
+  </div>
+</form>

@@ -1,0 +1,35 @@
+{
+  "name": "delight-app",
+  "version": "1.0.0",
+  "description": "delight-app",
+  "main": "app.js",
+  "scripts": {
+    "build:app": "cd devlite-app && npm install && ng build --prod",
+    "build:api": "npm install",
+    "build:prod": "npm run build:app && npm run build:api",
+    "start:dev": "cross-env PORT=9001 nodemon app.js",
+    "build": "npm run build:api",
+    "start": "cross-env PORT=9002 node app.js"
+  },
+  "author": "kumarta",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "cross-env": "^5.2.1",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.5.7",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  },
+  "bundledDependencies": [
+    "express"
+  ],
+  "engines": {
+    "node": "10.15.2"
+  }
+}

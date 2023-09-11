@@ -1,0 +1,13 @@
+<div class="item">
+  <span class="label">{{label}}</span>
+  <mat-icon>{{icon || 'menu_book'}}</mat-icon>
+  <span class="value">{{_value}}</span>
+  <mat-form-field *ngIf="!readOnly">
+    <mat-label>{{label}}</mat-label>
+    <mat-select (selectionChange)="selectionChange($event)" [(value)]="value">
+      <mat-option *ngFor="let option of options" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

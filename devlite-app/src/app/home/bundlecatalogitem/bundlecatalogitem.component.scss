@@ -1,0 +1,84 @@
+:host {
+  width: 100%;
+  height: 100%;
+}
+
+.wrapper.notselected{
+  background-color: #ffffff;
+}
+
+.wrapper.selected{
+  background-color: #3f51b5;
+  color: #ffffff;
+}
+
+.wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+
+  .content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    img {
+      height: 36px;
+      width: 36px;
+      border-radius: 50%;
+      background-size: cover;
+      background-color: #ffffff;
+      padding: 8px;
+      //border: 2px solid #3f51b5;
+    }
+    h4 {
+      padding: 0px;
+      margin-bottom: 0px;
+    }
+  }
+
+  .row {
+    display: flex;
+    width: 100%;
+    button {
+      width: 100%;
+      font-size: 11px;
+      border-radius: 0px;
+      line-height: 28px;
+    }
+  }
+}
+
+div.typewriter {
+  overflow: hidden; /* Ensures the content is not revealed until the animation */
+  //border-right: .15em solid #9C27B0; /* The typwriter cursor */
+  white-space: nowrap; /* Keeps the content on a single line */
+  margin: 0 auto; /* Gives that scrolling effect as the typing happens */
+  //letter-spacing: .15em; /* Adjust as needed */
+  animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+/* The typing effect */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* The typewriter cursor effect */
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #9c27b0;
+  }
+}

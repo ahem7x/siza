@@ -1,0 +1,1639 @@
+<div class="wrapper" *ngIf="org">
+  <h3>Onboard</h3>
+  <mat-form-field>
+    <input type="text" matInput placeholder="Organization Name" [value]="org.orgName" readonly />
+  </mat-form-field>
+
+  <div style="margin-bottom: 12px">
+    <mat-checkbox color="primary" name="configureBU" [(ngModel)]="configureBU"
+      >Configure Users & BUs
+    </mat-checkbox>
+  </div>
+
+  <mat-grid-list *ngIf="configureBU" cols="4" rowHeight="300px" gutterSize="16px" style="margin-bottom: 4px;">
+    <mat-grid-tile>
+      <div>
+        <h4>Users</h4>
+        <mat-list>
+          <mat-list-item *ngFor="let user of users">
+            <button mat-icon-button color="primary" (click)="deleteUser(user)">
+              <mat-icon matListIcon>delete_outline</mat-icon>
+            </button>
+            <span class="mat-body-1">{{ user.username }}</span>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <div>
+        <h4>Business Unit</h4>
+        <mat-list>
+          <mat-list-item *ngFor="let bu of org.businessUnits">
+            <button mat-icon-button color="primary" (click)="deleteBU(bu.name)">
+              <mat-icon matListIcon>delete_outline</mat-icon>
+            </button>
+            <span class="mat-body-1" style="width: 80%"> {{ bu.name }} </span>
+            <button mat-icon-button color="primary" (click)="selectBU(bu.name)">
+              <mat-icon matListIcon>arrow_forward</mat-icon>
+            </button>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="selectedBU">
+      <div>
+        <h4>{{ selectedBU }}'s Products</h4>
+        <mat-list>
+          <mat-list-item *ngFor="let product of products">
+            <button mat-icon-button color="primary" (click)="deleteProduct(product.name)">
+              <mat-icon matListIcon>delete_outline</mat-icon>
+            </button>
+            <span class="mat-body-1" style="width: 80%"> {{ product.name }} </span>
+            <button mat-icon-button color="primary" (click)="selectProduct(product.name)">
+              <mat-icon matListIcon>arrow_forward</mat-icon>
+            </button>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="selectedProduct">
+      <div>
+        <h4>{{ selectedProduct }}'s Releases</h4>
+        <mat-list>
+          <mat-list-item *ngFor="let release of releases">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="deleteRelease(release.name, release.version)"
+            >
+              <mat-icon matListIcon>delete_outline</mat-icon>
+            </button>
+            <span class="mat-body-1"> {{ release.name }} ({{ release.version }}) </span>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <mat-grid-list *ngIf="configureBU" cols="4" rowHeight="120px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <div class="new">
+        <mat-form-field class="fluid-field">
+          <input
+            type="text"
+            [(ngModel)]="username"
+            matInput
+            name="username"
+            placeholder="Email Address"
+          />
+        </mat-form-field>
+        <mat-form-field class="fluid-field">
+          <input
+            [type]="showPassword._password?'text':'password'"
+            (blur)="showPassword._password = false"
+            [(ngModel)]="password"
+            matInput
+            name="password"
+            placeholder="Password/Token"
+          />
+          <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword._password = true">
+            <mat-icon>remove_red_eye</mat-icon>
+          </button>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="addUser()" [disabled]="!username || !password">Register User</button>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <div class="new">
+        <mat-form-field class="fluid-field">
+          <input type="text" [(ngModel)]="bu" matInput name="bu" placeholder="Business Unit" />
+        </mat-form-field>
+        <button mat-stroked-button color="primary" (click)="addBU()" [disabled]="!bu">Add BU</button>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="selectedBU">
+      <div class="new">
+        <mat-form-field class="fluid-field">
+          <input
+            type="text"
+            [(ngModel)]="product"
+            matInput
+            name="product"
+            placeholder="Product Name"
+          />
+        </mat-form-field>
+        <button mat-stroked-button color="primary" (click)="addProduct()" [disabled]="!product">Add Product</button>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2" *ngIf="selectedProduct">
+      <div class="new">
+        <mat-form-field class="fluid-field">
+          <input
+            type="text"
+            [(ngModel)]="releaseName"
+            matInput
+            name="releaseName"
+            placeholder="Release Name"
+          />
+        </mat-form-field>
+        <mat-form-field class="fluid-field">
+          <input type="text" [(ngModel)]="version" matInput name="version" placeholder="Version" />
+        </mat-form-field>
+        <button mat-stroked-button color="primary" (click)="addRelease()" [disabled]="!releaseName || !version">Add Release</button>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <h3>ALM</h3>
+
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Product Backlog Tool"
+        [value]="org.almInfo.productBacklogTool.value"
+        [perspectiveValue]="defaultData.collaborateConfig.productBacklogTool[0]"
+        [options]="configValues.collaborateConfig.productBacklogTool"
+        (onSelect)="setToolInfo('almInfo', 'productBacklogTool', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.almInfo.productBacklogTool.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.productBacklogTool.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.productBacklogTool.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.productBacklogTool.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.productBacklogTool.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+        [type]="showPassword.productBacklogTool?'text':'password'"
+        (blur)="showPassword.productBacklogTool = false"  
+          [(ngModel)]="org.almInfo.productBacklogTool.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.productBacklogTool = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Sprint Backlog Tool"
+        [value]="org.almInfo.sprintBacklogTool.value"
+        [perspectiveValue]="defaultData.collaborateConfig.sprintBacklogTool[0]"
+        [options]="configValues.collaborateConfig.sprintBacklogTool"
+        (onSelect)="setToolInfo('almInfo', 'sprintBacklogTool', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.almInfo.sprintBacklogTool.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.sprintBacklogTool.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.sprintBacklogTool.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.sprintBacklogTool.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.sprintBacklogTool.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+        [type]="showPassword.sprintBacklogTool?'text':'password'"
+        (blur)="showPassword.sprintBacklogTool = false"
+          [(ngModel)]="org.almInfo.sprintBacklogTool.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.sprintBacklogTool = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Project Management Tool"
+        [value]="org.almInfo.projectMgmtTool.value"
+        [perspectiveValue]="defaultData.collaborateConfig.projectMgmtTool[0]"
+        [options]="configValues.collaborateConfig.projectMgmtTool"
+        (onSelect)="setToolInfo('almInfo', 'projectMgmtTool', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.almInfo.projectMgmtTool.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.projectMgmtTool.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.projectMgmtTool.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.projectMgmtTool.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.projectMgmtTool.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+        [type]="showPassword.releaseMgmtTool?'text':'password'"
+        (blur)="showPassword.releaseMgmtTool = false"
+          [(ngModel)]="org.almInfo.releaseMgmtTool.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.releaseMgmtTool = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Release Management Tool"
+        [value]="org.almInfo.releaseMgmtTool.value"
+        [perspectiveValue]="defaultData.collaborateConfig.releaseMgmtTool[0]"
+        [options]="configValues.collaborateConfig.releaseMgmtTool"
+        (onSelect)="setToolInfo('almInfo', 'releaseMgmtTool', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.almInfo.releaseMgmtTool.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.releaseMgmtTool.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.releaseMgmtTool.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.releaseMgmtTool.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.releaseMgmtTool.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+        [type]="showPassword.releaseMgmtTool?'text':'password'"
+        (blur)="showPassword.releaseMgmtTool = false"
+          [(ngModel)]="org.almInfo.releaseMgmtTool.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.releaseMgmtTool = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Service Management Tool"
+        [value]="org.almInfo.serviceMgmtTool.value"
+        [perspectiveValue]="defaultData.collaborateConfig.serviceMgmtTool[0]"
+        [options]="configValues.collaborateConfig.serviceMgmtTool"
+        (onSelect)="setToolInfo('almInfo', 'serviceMgmtTool', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.almInfo.serviceMgmtTool.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.serviceMgmtTool.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.serviceMgmtTool.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.serviceMgmtTool.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.almInfo.serviceMgmtTool.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.serviceMgmtTool?'text':'password'"
+          (blur)="showPassword.serviceMgmtTool = false"
+          [(ngModel)]="org.almInfo.serviceMgmtTool.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.serviceMgmtTool = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Framework"
+        [value]="org.almInfo.catalogFramework"
+        [perspectiveValue]="defaultData.collaborateConfig.catalog.framework"
+        [options]="configValues.collaborateConfig.catalog.framework"
+        (onSelect)="org.almInfo.catalogFramework = $event"
+      ></app-configitem>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <h3>Dev Workbench</h3>
+
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Source Code Manager"
+        [value]="org.devWorkbenchInfo.sourceCodeManager.value"
+        [perspectiveValue]="defaultData.integrateConfig.sourceCodeManager[0]"
+        [options]="configValues.integrateConfig.sourceCodeManager"
+        (onSelect)="setToolInfo('devWorkbenchInfo', 'sourceCodeManager', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.devWorkbenchInfo.sourceCodeManager.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.sourceCodeManager.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.sourceCodeManager.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.sourceCodeManager.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.sourceCodeManager.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.sourceCodeManager?'text':'password'"
+          (blur)="showPassword.sourceCodeManager = false"
+          [(ngModel)]="org.devWorkbenchInfo.sourceCodeManager.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.sourceCodeManager = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Testing Tool"
+        [value]="org.devWorkbenchInfo.testingTool.value"
+        [perspectiveValue]="defaultData.integrateConfig.testingTool[0]"
+        [options]="configValues.integrateConfig.testingTool"
+        (onSelect)="setToolInfo('devWorkbenchInfo', 'testingTool', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.devWorkbenchInfo.testingTool.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.testingTool.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.testingTool.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.testingTool.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.testingTool.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.testingTool?'text':'password'"
+          (blur)="showPassword.testingTool = false"
+          [(ngModel)]="org.devWorkbenchInfo.testingTool.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.testingTool = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="CI Tool"
+        [value]="org.devWorkbenchInfo.ciTool.value"
+        [perspectiveValue]="defaultData.integrateConfig.catalog.ciTool[0]"
+        [options]="configValues.integrateConfig.catalog.ciTool"
+        (onSelect)="setToolInfo('devWorkbenchInfo', 'ciTool', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.devWorkbenchInfo.ciTool.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.ciTool.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.ciTool.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.ciTool.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.devWorkbenchInfo.ciTool.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.ciTool?'text':'password'"
+          (blur)="showPassword.ciTool = false"
+          [(ngModel)]="org.devWorkbenchInfo.ciTool.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.ciTool = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <h3>Security</h3>
+
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Standard"
+        [value]="org.secureInfo.standard"
+        [perspectiveValue]="defaultData.secureConfig.catalog.standards[0]"
+        [options]="configValues.secureConfig.catalog.standards"
+        (onSelect)="org.secureInfo.standard = $event"
+      ></app-configitem>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Static Application Security Testing (SAST)"
+        [value]="org.secureInfo.sast.value"
+        [perspectiveValue]="defaultData.secureConfig.catalog.sast[0]"
+        [options]="configValues.secureConfig.catalog.sast"
+        (onSelect)="setToolInfo('secureInfo', 'sast', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.secureInfo.sast.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.sast.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.sast.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.sast.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.sast.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.sast?'text':'password'"
+          (blur)="showPassword.sast = false"
+          [(ngModel)]="org.secureInfo.sast.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.sast = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Dynamic Application Security Testing (DAST)"
+        [value]="org.secureInfo.dast.value"
+        [perspectiveValue]="defaultData.secureConfig.catalog.dast[0]"
+        [options]="configValues.secureConfig.catalog.dast"
+        (onSelect)="setToolInfo('secureInfo', 'dast', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.secureInfo.dast.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.dast.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.dast.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.dast.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.dast.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.dast?'text':'password'"
+          (blur)="showPassword.dast = false"
+          [(ngModel)]="org.secureInfo.dast.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.dast = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Runtime application self-protection (RASP)"
+        [value]="org.secureInfo.rasp.value"
+        [perspectiveValue]="defaultData.secureConfig.catalog.rasp[0]"
+        [options]="configValues.secureConfig.catalog.rasp"
+        (onSelect)="setToolInfo('secureInfo', 'rasp', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.secureInfo.rasp.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.rasp.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.rasp.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.rasp.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.rasp.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.rasp?'text':'password'"
+          (blur)="showPassword.rasp = false"
+          [(ngModel)]="org.secureInfo.rasp.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.rasp = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Container Protection"
+        [value]="org.secureInfo.siem.value"
+        [perspectiveValue]="defaultData.secureConfig.catalog.siem[0]"
+        [options]="configValues.secureConfig.catalog.siem"
+        (onSelect)="setToolInfo('secureInfo', 'siem', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.secureInfo.siem.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.siem.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.siem.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.siem.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.secureInfo.siem.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.siem?'text':'password'"
+          (blur)="showPassword.siem = false"
+          [(ngModel)]="org.secureInfo.siem.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.siem = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <h3>Infrastructure</h3>
+
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Configuration Management Tool"
+        [value]="org.deployInfo.configMgmtTool.value"
+        [perspectiveValue]="defaultData.deployConfig.catalog.configTool[0]"
+        [options]="configValues.deployConfig.catalog.configTool"
+        (onSelect)="setToolInfo('deployInfo', 'configMgmtTool', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.deployInfo.configMgmtTool.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.configMgmtTool.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.configMgmtTool.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.configMgmtTool.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.configMgmtTool.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.configMgmtTool?'text':'password'"
+          (blur)="showPassword.configMgmtTool = false"
+          [(ngModel)]="org.deployInfo.configMgmtTool.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.configMgmtTool = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Cloud Type"
+        [value]="org.deployInfo.cloudType.value"
+        [perspectiveValue]="defaultData.deployConfig.catalog.cloudType[0]"
+        [options]="configValues.deployConfig.catalog.cloudType"
+        (onSelect)="setToolInfo('deployInfo', 'cloudType', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.deployInfo.cloudType.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.cloudType.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.cloudType.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.cloudType.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.cloudType.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.cloudType?'text':'password'"
+          (blur)="showPassword.cloudType = false"
+          [(ngModel)]="org.deployInfo.cloudType.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.cloudType = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Orchestration Tool"
+        [value]="org.deployInfo.orchestrationTool.value"
+        [perspectiveValue]="defaultData.deployConfig.catalog.orchestrate[0]"
+        [options]="configValues.deployConfig.catalog.orchestrate"
+        (onSelect)="setToolInfo('deployInfo', 'orchestrationTool', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.deployInfo.orchestrationTool.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.orchestrationTool.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.orchestrationTool.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.orchestrationTool.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.orchestrationTool.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.orchestrationTool?'text':'password'"
+          (blur)="showPassword.orchestrationTool = false"
+          [(ngModel)]="org.deployInfo.orchestrationTool.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.orchestrationTool = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Deploy Tool"
+        [value]="org.deployInfo.deployTool.value"
+        [perspectiveValue]="defaultData.deployConfig.catalog.deploy[0]"
+        [options]="configValues.deployConfig.catalog.deploy"
+        (onSelect)="setToolInfo('deployInfo', 'deployTool', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.deployInfo.deployTool.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.deployTool.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.deployTool.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.deployTool.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.deployTool.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.deployTool?'text':'password'"
+          (blur)="showPassword.deployTool = false"
+          [(ngModel)]="org.deployInfo.deployTool.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.deployTool = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="App & Infra Monitoring"
+        [value]="org.deployInfo.aimonitor.value"
+        [perspectiveValue]="defaultData.deployConfig.catalog.aimonitor[0]"
+        [options]="configValues.deployConfig.catalog.aimonitor"
+        (onSelect)="setToolInfo('deployInfo', 'aimonitor', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.deployInfo.aimonitor.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.aimonitor.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.aimonitor.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.aimonitor.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.aimonitor.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.aimonitor?'text':'password'"
+          (blur)="showPassword.aimonitor = false"
+          [(ngModel)]="org.deployInfo.aimonitor.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.aimonitor = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="4" rowHeight="70px" gutterSize="16px" style="margin-bottom: 16px;">
+    <mat-grid-tile rowspan="2">
+      <app-configitem
+        label="Container Monitoring"
+        [value]="org.deployInfo.cmonitor.value"
+        [perspectiveValue]="defaultData.deployConfig.catalog.cmonitor[0]"
+        [options]="configValues.deployConfig.catalog.cmonitor"
+        (onSelect)="setToolInfo('deployInfo', 'cmonitor', $event)"
+      ></app-configitem>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="full-width">
+        <mat-select
+          placeholder="Deployment Method"
+          [(ngModel)]="org.deployInfo.cmonitor.deployment"
+        >
+          <mat-option value="GreenField">GreenField</mat-option>
+          <mat-option value="BrownField">BrownField</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.cmonitor.license"
+          matInput
+          name="license"
+          placeholder="License"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.cmonitor.username"
+          matInput
+          name="username"
+          placeholder="Username"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.cmonitor.url"
+          matInput
+          name="url"
+          placeholder="URL"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          type="text"
+          [(ngModel)]="org.deployInfo.cmonitor.certificate"
+          matInput
+          name="certificate"
+          placeholder="Certificate"
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="1">
+      <mat-form-field class="fluid-field">
+        <input
+          [type]="showPassword.cmonitor?'text':'password'"
+          (blur)="showPassword.cmonitor = false"
+          [(ngModel)]="org.deployInfo.cmonitor.password"
+          matInput
+          name="password"
+          placeholder="Password/Token"
+        />
+        <button mat-button matSuffix mat-icon-button color="primary" style="font-size: 20px" (click)="showPassword.cmonitor = true">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <button mat-raised-button color="primary" (click)="updateOrg()">Update Organization Info</button>
+</div>

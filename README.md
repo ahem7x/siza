@@ -1,92 +1,132 @@
-# siza
+# Devlite App - v3.0 Challenge 3 - Catalogz
+
+## 1. Overview
+This bundle includes:
+*   Angular App
+*   Express App
+
+## 2. Configuration
+The below configuration are maintained in the config/index.js file. This needs to be updated based on target environment.
+*   JWT secret key
+*   DB URL (Mongo)
+
+## 3.  Building and Running
+### Step 1: build angular app. 
+    go to devlite-app (subfolder of main app folder)
+    delete node_modules folder
+    sudo npm install
+    sudo npm run build
 
 
+### Step 2: build api
+    go to app home
+    delete node_modules folder
+    sudo npm install
 
-## Getting started
+### Step 3: start app
+    go to app home
+    sudo npm start
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 4. API Testing
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+POST http://localhost:9001/api/v3/org
+content-type: application/json
 
-## Add your files
+{
+    "orgName": "WIPRO"
+}
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+POST http://localhost:9002/api/v3/org/user/login
+content-type: application/json
 
-```
-cd existing_repo
-git remote add origin http://devx.huco.co:8082/root/siza.git
-git branch -M main
-git push -uf origin main
-```
+{
+    "username": "WIPROAdmin",
+    "password": "admin@123"
+}
 
-## Integrate with your tools
+POST http://localhost:9001/api/v3/proxy
+content-type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNjAwNjQxMThhNjcyNzMxYjUyNjA0ZCIsInVzZXJuYW1lIjoiV0lQUk9BZG1pbiIsImlhdCI6MTU4MzM1MTM5MywiZXhwIjoxNTgzNDM3NzkzfQ.YcZ6_A3SB9YSRvdjBg9-jhXloA3BjsPhrBTEyzPMAkI
 
-- [ ] [Set up project integrations](http://devx.huco.co:8082/root/siza/-/settings/integrations)
+### Get Organizations
+GET http://azuredevops.wiprodevlite.com/_apis/projectCollections?
+Authorization: Basic Administrator:qa75a2hoasmnhh3ybrmuqhjufykdxljytgjoquzgbxnoklcy7ilq
 
-## Collaborate with your team
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+### Get Projects
+POST http://azuredevops.wiprodevlite.com/DefaultCollection/_apis/Contribution/HierarchyQuery?api-version=5.0-preview.1
+content-type: application/json
+Authorization: Basic Administrator:qa75a2hoasmnhh3ybrmuqhjufykdxljytgjoquzgbxnoklcy7ilq
 
-## Test and Deploy
+{
+   "contributionIds":[
+      "ms.vss-tfs-web.project-plus-product-data-provider"
+   ],
+   "dataProviderContext":{
+      "properties":{
+         "sourcePage":{
+            "url":"http://azuredevops.wiprodevlite.com/DefaultCollection",
+            "routeId":"ms.vss-tfs-web.suite-me-page-route",
+            "routeValues":{
+               "view":"projects",
+               "controller":"ContributedPage",
+               "action":"Execute",
+               "serviceHost":"208a5b5a-6930-42e4-9358-f5e96dcc5d67 (DefaultCollection)"
+            }
+         }
+      }
+   }
+}
 
-Use the built-in continuous integration in GitLab.
+### Get Repos
+GET http://azuredevops.wiprodevlite.com/DefaultCollection/d1fef8f8-1227-4f5d-ae12-472f99cfd7c1/_apis/git/repositories?api-version=4.1
+Authorization: Basic Administrator:qa75a2hoasmnhh3ybrmuqhjufykdxljytgjoquzgbxnoklcy7ilq
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
 
-***
+### Get Branches
+GET http://azuredevops.wiprodevlite.com/DefaultCollection/d1fef8f8-1227-4f5d-ae12-472f99cfd7c1/_apis/git/repositories/ea67b3f6-1ed1-4906-96d3-2068d3b145f8/refs?filter=heads
+Authorization: Basic Administrator:qa75a2hoasmnhh3ybrmuqhjufykdxljytgjoquzgbxnoklcy7ilq
 
-# Editing this README
+### Get Metrics - Build
+GET http://azuredevops.wiprodevlite.com/DefaultCollection/Devlite/_apis/build/Metrics/Daily?minMetricsTime=2020-03-09T11%3A15%3A00.041Z
+Authorization: Basic Administrator:qa75a2hoasmnhh3ybrmuqhjufykdxljytgjoquzgbxnoklcy7ilq
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### Get Metrics - Deployments
+POST http://azuredevops.wiprodevlite.com/DefaultCollection/_apis/Contribution/HierarchyQuery/project/d1fef8f8-1227-4f5d-ae12-472f99cfd7c1
+Authorization: Basic Administrator:qa75a2hoasmnhh3ybrmuqhjufykdxljytgjoquzgbxnoklcy7ilq
+Accept: application/json;api-version=5.0-preview.1;excludeUrls=true;enumsAsNumbers=true;msDateFormat=true;noArrayWrap=true
+Content-Type: application/json
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+{"contributionIds":["ms.vss-releaseManagement-web.metrics-data-provider"],"dataProviderContext":{"properties":{"minmetricstime":"2020-03-09T00:00:00.000Z","operation":"getdeploymentmetrics","sourcePage":{"url":"http://azuredevops.wiprodevlite.com/DefaultCollection/DevLite","routeId":"ms.vss-tfs-web.project-overview-route","routeValues":{"project":"DevLite","controller":"Apps","action":"ContributedHub","serviceHost":"208a5b5a-6930-42e4-9358-f5e96dcc5d67 (DefaultCollection)"}}}}}
 
-## Name
-Choose a self-explaining name for your project.
+### Get Metrics - Repo Info
+POST http://azuredevops.wiprodevlite.com/DefaultCollection/_apis/Contribution/HierarchyQuery/project/d1fef8f8-1227-4f5d-ae12-472f99cfd7c1  
+Accept: application/json;api-version=5.0-preview.1;excludeUrls=true;enumsAsNumbers=true;msDateFormat=true;noArrayWrap=true" -H 
+content-type: application/json 
+Authorization: Basic Administrator:qa75a2hoasmnhh3ybrmuqhjufykdxljytgjoquzgbxnoklcy7ilq
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+{"contributionIds":["ms.vss-code-web.code-metrics-data-provider-verticals"],"dataProviderContext":{"properties":{"numOfDays":7,"sourcePage":{"url":"http://azuredevops.wiprodevlite.com/DefaultCollection/DevLite","routeId":"ms.vss-tfs-web.project-overview-route","routeValues":{"project":"DevLite","controller":"Apps","action":"ContributedHub","serviceHost":"208a5b5a-6930-42e4-9358-f5e96dcc5d67 (DefaultCollection)"}}}}}
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### Get Metrics - Build Time
+GET http://azuredevops.wiprodevlite.com/DefaultCollection/DevLite/_apis/build/builds?definitions=15&statusFilter=2&top=10&queryOrder=3c
+Authorization: Basic Administrator:qa75a2hoasmnhh3ybrmuqhjufykdxljytgjoquzgbxnoklcy7ilq
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## Gitlab
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### Get Projects
+GET https://gitlabproduction.wiprodevlite.com/api/v4/users/root/projects
+PRIVATE-TOKEN: JgEkgHTzKRTC15rg_hkq
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Get Branches
+GET https://gitlabproduction.wiprodevlite.com/api/v4/projects/9/repository/branches
+PRIVATE-TOKEN: JgEkgHTzKRTC15rg_hkq
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### Activate pipeline
+POST https://gitlabproduction.wiprodevlite.com/api/v4/projects/9/pipeline
+PRIVATE-TOKEN: JgEkgHTzKRTC15rg_hkq
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+ref=release3
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+### Get Metrics
+GET https://gitlabproduction.wiprodevlite.com/api/v4/projects/9/pipelines
+PRIVATE-TOKEN: JgEkgHTzKRTC15rg_hkq

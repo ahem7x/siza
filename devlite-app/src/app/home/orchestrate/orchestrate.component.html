@@ -1,0 +1,50 @@
+<mat-card style="height: 100%" *ngIf="firstShow">
+  <div class="right">
+    <div class="dynamic-flow-card">
+      <div class="dynamic-flow">
+        <img src="../../assets/dynamic-workflow.png" />
+        <div @list class="content" (@list.done)="closeAnimation($event)">
+          <div @items class="box cf">{{dynamicData.preferredCollaborateFramework}}</div>
+          <div @items [ngClass]="{'box': true, 'cf2': true, 'greenfield': dynamicData.preferredProductBacklogToolGF, 'brownfield': !dynamicData.preferredProductBacklogToolGF}">{{dynamicData.preferredProductBacklogTool}}</div>
+          <div @items [ngClass]="{'box': true, 'cf3': true, 'greenfield': dynamicData.preferredSprintBacklogToolGF, 'brownfield': !dynamicData.preferredSprintBacklogToolGF}">{{dynamicData.preferredSprintBacklogTool}}</div>
+          <div @items [ngClass]="{'box': true, 'cf4': true, 'greenfield': dynamicData.preferredProjMgmtToolGF, 'brownfield': !dynamicData.preferredProjMgmtToolGF}">{{dynamicData.preferredProjMgmtTool}}</div>
+          <div @items [ngClass]="{'box': true, 'sm': true, 'greenfield': dynamicData.preferredServiceMgmtToolGF, 'brownfield': !dynamicData.preferredServiceMgmtToolGF}">{{dynamicData.preferredServiceMgmtTool}}</div>
+          <div @items [ngClass]="{'box': true, 'cb': true, 'greenfield': dynamicData.preferredCIToolGF, 'brownfield': !dynamicData.preferredCIToolGF}">{{dynamicData.preferredCITool}}</div>
+          <div @items [ngClass]="{'box': true, 'gh': true, 'greenfield': dynamicData.preferredSourceCodeManagerGF, 'brownfield': !dynamicData.preferredSourceCodeManagerGF}">{{dynamicData.preferredSourceCodeManager}}</div>
+          <div @items class="box bt1">{{dynamicData.preferredLang}}</div>
+          <div @items class="box bt2">{{dynamicData.preferredLangBuildTool}}</div>
+          <div @items [ngClass]="{'box': true, 'rp': true, 'greenfield': true}" class="box rp">JFrog Artifactory</div>
+          <div @items [ngClass]="{'box': true, 'tt': true, 'greenfield': dynamicData.preferredTestingToolGF, 'brownfield': !dynamicData.preferredTestingToolGF}">{{dynamicData.preferredTestingTool}}</div>
+          <div @items [ngClass]="{'box': true, 'rt': true, 'greenfield': dynamicData.preferredReleaseToolGF, 'brownfield': !dynamicData.preferredReleaseToolGF}">{{dynamicData.preferredReleaseTool}}</div>
+          <div @items class="box ss">{{dynamicData.preferredSecStandard}}</div>
+          <!-- loop of secType-->
+          <div @items [ngClass]="{'box': true, 'st-1': true, 'greenfield': dynamicData.preferredSecurityTool0GF, 'brownfield': !dynamicData.preferredSecurityTool0GF}">{{dynamicData.preferredSecurityTool[0]}}</div>
+          <div @items [ngClass]="{'box': true, 'st-2': true, 'greenfield': dynamicData.preferredSecurityTool1GF, 'brownfield': !dynamicData.preferredSecurityTool1GF}">{{dynamicData.preferredSecurityTool[1]}}</div>
+          <div @items [ngClass]="{'box': true, 'st-3': true, 'greenfield': dynamicData.preferredSecurityTool2GF, 'brownfield': !dynamicData.preferredSecurityTool2GF}">{{dynamicData.preferredSecurityTool[2]}}</div>
+          <div @items [ngClass]="{'box': true, 'st-4': true, 'greenfield': dynamicData.preferredSecurityTool3GF, 'brownfield': !dynamicData.preferredSecurityTool3GF}">{{dynamicData.preferredSecurityTool[3]}}</div>
+
+          <div @items [ngClass]="{'box': true, 'm1': true, 'greenfield': dynamicData.preferredMonitoringTools0GF, 'brownfield': !dynamicData.preferredMonitoringTools0GF}">{{dynamicData.preferredMonitoringTools[0]}}</div>
+          <div @items [ngClass]="{'box': true, 'm2': true, 'greenfield': dynamicData.preferredMonitoringTools1GF, 'brownfield': !dynamicData.preferredMonitoringTools1GF}">{{dynamicData.preferredMonitoringTools[1]}}</div>
+          <div @items [ngClass]="{'box': true, 'pt': true, 'greenfield': dynamicData.preferredDeploymentToolGF, 'brownfield': !dynamicData.preferredDeploymentToolGF}">{{dynamicData.preferredDeploymentTool}}</div>
+          <div @items [ngClass]="{'box': true, 'ct': true, 'greenfield': dynamicData.preferredConfigToolGF, 'brownfield': !dynamicData.preferredConfigToolGF}">{{dynamicData.preferredConfigTool}}</div>
+          <div @items [ngClass]="{'box': true, 'ot': true, 'greenfield': dynamicData.preferredOrchestrationToolGF, 'brownfield': !dynamicData.preferredOrchestrationToolGF}">{{dynamicData.preferredOrchestrationTool}}</div>
+          <div @items [ngClass]="{'box': true, 'dt': true, 'greenfield': dynamicData.preferredTargetComputeEnvironmentGF, 'brownfield': !dynamicData.preferredTargetComputeEnvironmentGF}">{{dynamicData.preferredTargetComputeEnvironment}}</div>
+          <div @items *ngIf="role !== 'ADMIN'">
+            <div [ngClass]="getEnvClass(i+1,envData)" [ngStyle]="{'top': getTop(i)}"
+              *ngFor="let envData of dynamicData.envData; let i = index">
+              <span *ngIf="i%5>1">&nbsp;&nbsp;</span>
+              {{envData}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position: absolute; right: 20px; top: 20px;">
+    <button class="button" (click)="activatePipeline()" 
+      [disabled]="pipelineActivated"
+      mat-stroked-button color="primary">
+        {{service.role === 'ADMIN'?'Deploy Toolchain':'Activate Pipeline'}}
+    </button>
+  </div>
+</mat-card>

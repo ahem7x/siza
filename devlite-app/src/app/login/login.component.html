@@ -1,0 +1,24 @@
+<mat-card class="card">
+  <mat-card-content>
+    <h3 center>DevLite App Login</h3>
+    <form class="form">
+      <mat-form-field class="full-width">
+        <input [(ngModel)]="username" matInput name="username" placeholder="Email Address">
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <input type="password" [(ngModel)]="password" matInput name="password" placeholder="Password">
+      </mat-form-field>
+    </form>
+
+    <!--
+    <div class="button-left">
+      <button class="button" routerLink="/register" mat-raised-button>Register</button>
+    </div>
+    -->
+
+    <div class="button-right">
+      <button class="button" (click)="login()" mat-raised-button color="primary">Login</button>
+    </div>
+  </mat-card-content>
+</mat-card>

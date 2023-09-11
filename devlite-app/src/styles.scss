@@ -1,0 +1,36 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~@angular/material/theming";
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,700");
+
+$custom-typography: mat-typography-config(
+  $font-family: "Open Sans, monospace",
+  $body-1: mat-typography-level(13px, 20px, 400),
+  $input: mat-typography-level(13px, 1.25, 400),
+  $button: mat-typography-level(13px, 14px, 700)
+);
+
+// Override typography CSS classes (e.g., mat-h1, mat-display-1, mat-typography, etc.).
+@include mat-base-typography($custom-typography);
+
+// Override typography for a specific Angular Material components.
+@include mat-checkbox-typography($custom-typography);
+
+// Override typography for all Angular Material, including mat-base-typography and all components.
+@include angular-material-typography($custom-typography);
+
+// Override the typography in the core CSS.
+@include mat-core($custom-typography);
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: "Open Sans";
+  margin: 0px;
+  background-color: #f1f1f1;
+  font-size: mat-font-size($custom-typography, body-1);
+  line-height: mat-line-height($custom-typography, body-1);
+}

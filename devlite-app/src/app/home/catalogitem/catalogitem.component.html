@@ -1,0 +1,14 @@
+<mat-label>
+  <h4>{{label}}</h4>
+</mat-label>
+
+<mat-grid-list [cols]="cols" rowHeight="75px" gutterSize="16px">
+  <mat-grid-tile *ngFor="let option of options; let i = index" 
+    [ngClass]="{'selected': selected?selected.includes(option):false}"
+    (click)="select(option)">
+    <div class="col">
+      <span>{{option}}</span>
+      <mat-icon>{{icons?icons[i]:'menu_book'}}</mat-icon>
+    </div>
+  </mat-grid-tile>
+</mat-grid-list>
