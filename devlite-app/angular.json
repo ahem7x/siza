@@ -30,7 +30,6 @@
               "src/styles.scss"
             ],
             "scripts": [],
-            "es5BrowserSupport": true
           },
           "configurations": {
             "production": {
@@ -43,7 +42,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -136,5 +134,7 @@
       }
     }
   },
-  "defaultProject": "devlight-app"
+  "cli": {
+    "analytics": "0cbbc82c-a714-47aa-816d-c8fa2b79d1d3"
+  }
 }
