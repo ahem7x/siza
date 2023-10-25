@@ -5,13 +5,15 @@ module.exports = function (req, res, next) {
     console.log('validating session');
     let url = req.originalUrl;
     if (!url.startsWith('/api')) {
+    console.log('starts with api');
         next();
     }
     else if (url === '/api/v3/org/user/login' || url === '/api/v3/org') {
         // by pass
+    console.log('starts with login or org');
         next();
     } else {
-        //console.log(req.headers.authorization);
+        console.log(req.headers.authorization);
         var token = req.headers.authorization;
         if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
         jwt.verify(token, config.secret, function (err, decoded) {

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from "@angular/core";
 import { Chart } from "chart.js";
+import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 
 @Component({
   selector: "app-stacked-barlinechart",

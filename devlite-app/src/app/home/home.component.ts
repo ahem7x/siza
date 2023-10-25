@@ -1,7 +1,8 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { Router, ActivatedRoute, Event, NavigationStart, NavigationEnd, NavigationError } from '@angular/router';
 import { UserService } from '../services/user.service';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 export const AdminModuleList = [
   {

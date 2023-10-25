@@ -3,7 +3,7 @@ import { UserService } from 'src/app/services/user.service';
 
 import { find, findIndex } from 'lodash';
 import { User, Release, Product, Org, BusinessUnit } from '../../models/model';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 @Component({

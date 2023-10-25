@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DevWorkbenchInfo, Org, Stat } from 'src/app/models/model';
 import { UserService } from 'src/app/services/user.service';
 import { findIndex, countBy, groupBy } from 'lodash';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dashboard',

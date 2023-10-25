@@ -7,7 +7,7 @@ var express = require('express')
     , path = require('path');
 
 app.use(cors());
-app.use(require('./middleware/validateSession'));
+#app.use(require('./middleware/validateSession'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname+'/devlite-app/dist/devlight-app'));

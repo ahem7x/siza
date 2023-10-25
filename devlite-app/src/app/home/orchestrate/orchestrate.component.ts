@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { trigger, query, stagger, transition, animateChild, animate, style, animation } from '@angular/animations';
 import { UserService, ProxyApiData, PerspectiveConfig } from 'src/app/services/user.service';
 

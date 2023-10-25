@@ -1,6 +1,7 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatSnackBar, PageEvent } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { PageEvent } from '@angular/material/paginator';
 import { UserService } from 'src/app/services/user.service';
 import { Bundle, Org, DevWorkbenchInfo } from 'src/app/models/model';
 

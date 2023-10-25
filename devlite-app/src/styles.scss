@@ -1,6 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
-@import "~@angular/material/theming";
+@use "mixins" as m;
+
+*, *::before, *::after{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+.info {
+    @include m.theme;
+}
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+@import "@angular/material/theming";
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,700");
 
 $custom-typography: mat-typography-config(
