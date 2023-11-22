@@ -27,6 +27,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: cd devlite-app
-    - run: rm node_modules
-    - run: npm install
-    - run: npm run build
+    - run: rm node_modules -fr
+    - run: sudo npm install
+    - run: sudo npm run build
