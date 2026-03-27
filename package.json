@@ -135,7 +135,7 @@
     "find-up": "^4.1.0",
     "finalhandler": "^1.2.0",
     "find-cache-dir": "^4.0.0",
-    "follow-redirects": "^1.5.10",
+    "follow-redirects": "^1.15.4",
     "form-data": "^3.0.1",
     "fraction.js": "^4.3.6",
     "forwarded": "^0.2.0",
